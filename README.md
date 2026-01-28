@@ -84,37 +84,28 @@ tokenbased:
 ## zabbix integration
 
 1. Create the User Group
-Go to Administration > User groups > Create user group.
 
-Group name: API_Automation_Group.
-
-Host permissions tab: Add the specific Host Groups your script needs to manage.
-
-Permission: Select Read-write (since you mentioned "updating stuff").
-
-Inside your User Group settings, look for the Frontend access dropdown.
-
-Set this to Disabled.
+- Go to Administration > User groups > Create user group.
+- Group name: API_Automation_Group.
+- Host permissions tab: Add the specific Host Groups your script needs to manage.
+- Permission: Select Read-write (since you mentioned "updating stuff").
+- Inside your User Group settings, look for the Frontend access dropdown.
+- Set this to Disabled.
 
 2. Create the User Role
-Go to Administration > User roles > Create user role.
 
-Name: API_Limited_Write_Role.
-
-User type: Admin (required if you are updating host/item configurations).
-
-API access: Checked.
-
-API methods: Specify problem.*, event.*, and host.* (or just the ones you specifically need).
+- Go to Administration > User roles > Create user role.
+- Name: API_Limited_Write_Role.
+- User type: Admin (required if you are updating host/item configurations).
+- API access: Checked.
+- API methods: (kept default )Specify problem.*, event.*, and host.* (or just the ones you specifically need).
 
 3. Create the User
-Go to Administration > Users > Create user.
 
-Username: api_script_user.
-
-Groups: Select your API_Automation_Group.
-
-User role tab: Select your API_Limited_Write_Role.
+- Go to Administration > Users > Create user.
+- Username: api_script_user.
+- Groups: Select your API_Automation_Group.
+- User role tab: Select your API_Limited_Write_Role.
 
 ## run script
 
