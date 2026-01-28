@@ -208,3 +208,8 @@ __marimo__/
 
 # json
 .json
+
+# env and config
+venv/
+.env
+config.json
