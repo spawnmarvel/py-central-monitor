@@ -126,16 +126,36 @@ User role tab: Select your API_Limited_Write_Role.
 result
 
 ```text
-Alert: CheckLastTag1 (Severity: 0)
-Alert: CheckLastTag2 (Severity: 0)
-Alert: CheckLastTag3 (Severity: 0)
-Alert: Cert: SSL certificate is invalid (Severity: 4)
-Alert: Interface eth0: Ethernet has changed to lower speed than it was before (Severity: 1)
-Alert: Linux: Zabbix agent is not available (for 3m) (Severity: 3)
-Alert: Interface eth0: Ethernet has changed to lower speed than it was before (Severity: 1)
-Alert: Linux: Zabbix agent is not available (for 3m) (Severity: 3)
-Alert: Linux: Zabbix agent is not available (for 3m) (Severity: 3)
-Alert: MySQL: Buffer pool utilization is too low (less than 50% for 5m) (Severity: 2)
+Connected to Zabbix API
+-------------------------------------------------------
+[Zabbix server] High: Cert: SSL certificate is invalid
+  > Operational Data: No data
+  > Trigger ID: 23875
+------------------------------
+[vmoffline01] Average: Linux: Zabbix agent is not available
+  > Operational Data: No data
+  > Trigger ID: 24126
+------------------------------
+[docker03getmirrortest] Average: Linux: Zabbix agent is not available
+  > Operational Data: No data
+  > Trigger ID: 24039
+------------------------------
+[dmzdocker03] Average: Linux: Zabbix agent is not available
+  > Operational Data: No data
+  > Trigger ID: 24062
+------------------------------
+[Zabbix server] Warning: MySQL: Buffer pool utilization is too low
+  > Operational Data: No data
+  > Trigger ID: 23795
+------------------------------
+[dmzdocker03] Info: Interface eth0: Ethernet has changed to lower speed than it was before
+  > Operational Data: Current reported speed: {ITEM.LASTVALUE1}
+  > Trigger ID: 24075
+------------------------------
+[docker03getmirrortest] Info: Interface eth0: Ethernet has changed to lower speed than it was before
+  > Operational Data: Current reported speed: {ITEM.LASTVALUE1}
+  > Trigger ID: 24105
+------------------------------
 ```
 
 
