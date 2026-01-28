@@ -42,6 +42,9 @@ pip install zabbix-utils
 # libs
 pip freeze > requirements.txt
 
+# deactivate
+deactivate
+
 ```
 
 You definitely don't want Git tracking the venv folder. Add this line to your .gitignore:
