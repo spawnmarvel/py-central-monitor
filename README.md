@@ -158,6 +158,17 @@ Connected to Zabbix API
 ------------------------------
 ```
 
+- Secured your credentials using a config.json file.
+
+- Isolated your environment using a Python venv.
+
+- Hardened your Git workflow by untracking sensitive files.
+
+- Mastered the Zabbix API connection while handling SSL certificate issues.
+
+- Extracted live problem data, including hostnames, severity levels, and operational data.
+
+## flask app
 
 
 
