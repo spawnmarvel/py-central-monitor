@@ -1,0 +1,5 @@
+{
+    "zabbix_url": "https://your-zabbix-server/zabbix",
+    "zabbix_user": "Admin",
+    "zabbix_pass": "your_password"
+}
