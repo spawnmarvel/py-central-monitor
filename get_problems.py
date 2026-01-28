@@ -1,48 +1,39 @@
 import json
+import os
+import sys
 from zabbix_utils import ZabbixAPI
 
-def get_zabbix_problems():
-    # 1. Load configuration from JSON
-    try:
-        with open('config.json', 'r') as f:
-            config = json.load(f)
-    except FileNotFoundError:
-        print("Error: config.json file not found.")
-        return
+# Get the directory where the script is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
 
-    # 2. Initialize API using dictionary keys
+def load_config():
+    if not os.path.exists(CONFIG_PATH):
+        print(f"Error: {CONFIG_PATH} not found.")
+        sys.exit(1)
+    
+    with open(CONFIG_PATH, 'r') as f:
+        return json.load(f)
+
+def main():
+    config = load_config()
     api = ZabbixAPI(url=config['zabbix_url'])
 
     try:
-        # 3. Authenticate
         api.login(user=config['zabbix_user'], password=config['zabbix_pass'])
-        print(f"Connected to: {config['zabbix_url']}\n")
-
-        # 4. Fetch Problems
-        # We only request the fields we actually need to save memory
+        # Get only the most important problem details
         problems = api.problem.get(
-            output=["eventid", "name", "severity", "clock"],
-            sortfield="eventid",
-            sortorder="DESC"
+            output=["name", "severity"],
+            recent=True
         )
-
-        if not problems:
-            print("No active problems found. Everything is green!")
-            return
-
-        print(f"{'ID':<10} | {'Severity':<10} | {'Problem Name'}")
-        print("-" * 60)
-
+        
         for p in problems:
-            print(f"{p['eventid']:<10} | {p['severity']:<10} | {p['name']}")
-
+            print(f"Alert: {p['name']} (Severity: {p['severity']})")
+            
     except Exception as e:
-        print(f"An error occurred: {e}")
-
+        print(f"Connection Error: {e}")
     finally:
-        # 5. Always close the session
-        if 'api' in locals():
-            api.logout()
+        api.logout()
 
 if __name__ == "__main__":
-    get_zabbix_problems()
+    main()

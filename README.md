@@ -39,6 +39,8 @@ source venv/bin/activate
 # dependencies
 pip install zabbix-utils
 
+# libs
+pip freeze > requirements.txt
 
 ```
 
@@ -50,6 +52,18 @@ venv/
 .env
 config.json
 ``` 
+
+example structure
+
+``log
+py-central-monitor/
+├── .git/               # Git metadata
+├── venv/               # Virtual environment (IGNORED)
+├── .gitignore          # Should contain "venv/" and "config.json"
+├── config.json         # Your local secrets (IGNORED)
+├── config.json.example # Template for others (TRACKED)
+└── get_problems.py     # Your script (TRACKED)
+```
 ## config
 
 user and passbased:
