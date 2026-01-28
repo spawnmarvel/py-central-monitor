@@ -1,12 +1,52 @@
 import json
 import os
-# import urllib3
-from zabbix_utils import ZabbixAPI
+import ssl
+import urllib.request
+import urllib.error
 
-# Disable SSL warnings
-# urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+def zabbix_rpc(url, method, params, auth_token=None):
+    """Helper to handle JSON-RPC requests via urllib"""
+    
+    # Ensure URL points exactly to the API endpoint
+    if not url.endswith('/api_jsonrpc.php'):
+        url = url.rstrip('/') + '/api_jsonrpc.php'
+
+    payload = {
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": 1
+    }
+    if auth_token:
+        payload["auth"] = auth_token
+
+    try:
+        data = json.dumps(payload).encode("utf-8")
+        
+        # Create SSL context to ignore self-signed certificate errors
+        context = ssl._create_unverified_context()
+        
+        # Define headers to ensure the server accepts the JSON request
+        headers = {
+            'Content-Type': 'application/json-rpc',
+            'User-Agent': 'Zabbix-Python-Urllib-Client'
+        }
+        
+        req = urllib.request.Request(url, data=data, headers=headers)
+        
+        with urllib.request.urlopen(req, context=context) as response:
+            res_body = response.read().decode("utf-8")
+            if not res_body:
+                return {"error": "Empty response from server"}
+            return json.loads(res_body)
+            
+    except urllib.error.HTTPError as e:
+        return {"error": "HTTP Error " + str(e.code) + ": " + e.reason}
+    except Exception as e:
+        return {"error": str(e)}
 
 def get_zabbix_data():
+    # 1. Load Configuration
     config_file = 'config.json'
     if not os.path.exists(config_file):
         print("Error: " + config_file + " not found.")
@@ -15,65 +55,76 @@ def get_zabbix_data():
     with open(config_file, 'r') as f:
         config = json.load(f)
 
-    api = ZabbixAPI(url=config['zabbix_url'], validate_certs=False)
+    url = config['zabbix_url']
 
-    try:
-        api.login(user=config['zabbix_user'], password=config['zabbix_pass'])
-        print("Connected to Zabbix API")
-        print("-------------------------------------------------------")
+    # 2. Login to get Auth Token
+    login_params = {
+        "username": config['zabbix_user'],
+        "password": config['zabbix_pass']
+    }
+    
+    print("Connecting to: " + url)
+    login_result = zabbix_rpc(url, "user.login", login_params)
 
-        # We add expandDescription to fill in macros
-        # We add selectLastEvent to get the Operational Data (opdata)
-        triggers = api.trigger.get(
-            output=["triggerid", "description", "priority", "opdata"],
-            selectHosts=["name"],
-            expandDescription=True,
-            only_true=True,
-            monitored=True,
-            selectLastEvent=["eventid", "opdata"],
-            sortfield="priority",
-            sortorder="DESC"
-        )
+    if "error" in login_result:
+        print("Login Failed, is zabbix running: " + str(login_result["error"]))
+        return
 
-        if not triggers:
-            print("No active problems found.")
-            return
+    auth_token = login_result["result"]
+    print("Login Successful.")
+    print("-" * 50)
 
+    # 3. Fetch Triggers (Problems)
+    trigger_params = {
+        "output": ["triggerid", "description", "priority", "opdata"],
+        "selectHosts": ["name"],
+        "expandDescription": True,
+        "only_true": True,
+        "monitored": True,
+        "selectLastEvent": ["eventid", "opdata"],
+        "sortfield": "priority",
+        "sortorder": "DESC"
+    }
+
+    result = zabbix_rpc(url, "trigger.get", trigger_params, auth_token)
+
+    if "error" in result:
+        print("API Error: " + str(result["error"]))
+        return
+
+    triggers = result.get("result", [])
+
+    if not triggers:
+        print("No active problems found.")
+    else:
         severity_labels = ["Not classified", "Info", "Warning", "Average", "High", "Disaster"]
 
         for t in triggers:
-            # 1. Get Hostname
+            # Get Hostname
             hostname = "Unknown Host"
             if "hosts" in t and len(t["hosts"]) > 0:
                 hostname = t["hosts"][0]["name"]
 
-            # 2. Get Severity Name
-            sev_index = int(t['priority'])
-            if sev_index < len(severity_labels):
-                sev_name = severity_labels[sev_index]
-            else:
-                sev_name = str(t['priority'])
+            # Get Severity
+            sev_idx = int(t['priority'])
+            sev_name = severity_labels[sev_idx] if sev_idx < len(severity_labels) else str(sev_idx)
 
-            # 3. Get Operational Data
-            # This is the "live value" seen in the Zabbix dashboard
-            op_data = "No data"
-            if "opdata" in t and t["opdata"] != "":
-                op_data = t["opdata"]
-            elif "lastEvent" in t and t["lastEvent"] is not None:
-                # Sometimes opdata is nested in the last event
+            # Get Operational Data (Check both trigger and last event levels)
+            op_data = t.get("opdata", "")
+            if op_data == "" and "lastEvent" in t and t["lastEvent"]:
                 op_data = t["lastEvent"].get("opdata", "No data")
+            if op_data == "":
+                op_data = "No data"
 
-            # 4. Print using + concatenation
+            # Output with + concatenation
             print("[" + hostname + "] " + sev_name + ": " + t['description'])
-            print("  > Operational Data: " + op_data)
-            print("  > Trigger ID: " + str(t['triggerid']))
+            print("  > Value: " + op_data)
+            print("  > ID: " + str(t['triggerid']))
             print("-" * 30)
 
-    except Exception as e:
-        print("An error occurred: " + str(e))
-
-    finally:
-        api.logout()
+    # 4. Logout
+    zabbix_rpc(url, "user.logout", [], auth_token)
+    print("Session closed.")
 
 if __name__ == "__main__":
     get_zabbix_data()

@@ -7,7 +7,7 @@ python webapp for central monitoring from different sources
 * flask
 * linux
 * api
-* pip install zabbix-utils
+* 
 
 ```bash
 python3 --version
