@@ -17,7 +17,11 @@ def load_config():
 
 def main():
     config = load_config()
-    api = ZabbixAPI(url=config['zabbix_url'])
+    # Initialize the API and tell it to ignore self-signed cert errors
+    api = ZabbixAPI(url=config['zabbix_url'], validate_certs=False)
+    # If you are in a production environment and have the Root CA certificate for your Zabbix server,
+    # it is much safer to point to it rather than disabling security entirely.
+    # api = ZabbixAPI(url=config['zabbix_url'], validate_certs="/path/to/CA_certificate.crt")
 
     try:
         api.login(user=config['zabbix_user'], password=config['zabbix_pass'])

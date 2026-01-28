@@ -81,7 +81,68 @@ user and passbased:
 ```
 tokenbased:
 
-
 ## zabbix integration
+
+1. Create the User Group
+Go to Administration > User groups > Create user group.
+
+Group name: API_Automation_Group.
+
+Host permissions tab: Add the specific Host Groups your script needs to manage.
+
+Permission: Select Read-write (since you mentioned "updating stuff").
+
+Inside your User Group settings, look for the Frontend access dropdown.
+
+Set this to Disabled.
+
+2. Create the User Role
+Go to Administration > User roles > Create user role.
+
+Name: API_Limited_Write_Role.
+
+User type: Admin (required if you are updating host/item configurations).
+
+API access: Checked.
+
+API methods: Specify problem.*, event.*, and host.* (or just the ones you specifically need).
+
+3. Create the User
+Go to Administration > Users > Create user.
+
+Username: api_script_user.
+
+Groups: Select your API_Automation_Group.
+
+User role tab: Select your API_Limited_Write_Role.
+
+## run script
+
+```bash 
+(venv python3 get_problems.py)
+
+```
+
+result
+
+```text
+Alert: CheckLastTag1 (Severity: 0)
+Alert: CheckLastTag2 (Severity: 0)
+Alert: CheckLastTag3 (Severity: 0)
+Alert: Cert: SSL certificate is invalid (Severity: 4)
+Alert: Interface eth0: Ethernet has changed to lower speed than it was before (Severity: 1)
+Alert: Linux: Zabbix agent is not available (for 3m) (Severity: 3)
+Alert: Interface eth0: Ethernet has changed to lower speed than it was before (Severity: 1)
+Alert: Linux: Zabbix agent is not available (for 3m) (Severity: 3)
+Alert: Linux: Zabbix agent is not available (for 3m) (Severity: 3)
+Alert: MySQL: Buffer pool utilization is too low (less than 50% for 5m) (Severity: 2)
+```
+
+
+
+
+
+
+
 
 
