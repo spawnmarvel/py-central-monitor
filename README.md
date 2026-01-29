@@ -235,7 +235,8 @@ Why this structure?
 INSERT INTO zabbix_live_problems 
     (trigger_id, source_vm, hostname, category, problem_detail, operational_data, duration, ack_status, severity) 
 VALUES 
-    (23875, 'vmzabbix02', 'Zabbix server', 'Cert', 'SSL certificate is invalid', 'No data', '197d 14h 14m', 'Unacknowledged', 'Average')
+    (23875, 'vmzabbix02', 'Zabbix server', 'Cert', 'SSL certificate is invalid', 'No data', '197d 14h 26m', 'Unacknowledged', 'Warning'),
+    (24126, 'vmzabbix02', 'vmoffline01', 'Linux', 'Zabbix agent is not available', 'No data', '16d 50m', 'Unacknowledged', 'Average')
 ON DUPLICATE KEY UPDATE 
     operational_data = VALUES(operational_data),
     duration = VALUES(duration),
@@ -246,13 +247,13 @@ ON DUPLICATE KEY UPDATE
 result on select
 
 ```text
-select * from zabbix_live_problems;
-+------------+------------+---------------+----------+----------------------------+------------------+--------------+----------------+----------+---------------------+
-| trigger_id | source_vm  | hostname      | category | problem_detail             | operational_data | duration     | ack_status     | severity | last_updated        |
-+------------+------------+---------------+----------+----------------------------+------------------+--------------+----------------+----------+---------------------+
-|      23875 | vmzabbix02 | Zabbix server | Cert     | SSL certificate is invalid | No data          | 197d 14h 14m | Unacknowledged | Average  | 2026-01-29 22:00:31 |
-+------------+------------+---------------+----------+----------------------------+------------------+--------------+----------------+----------+---------------------+
-1 row in set (0.012 sec)
++------------+------------+---------------+----------+-------------------------------+------------------+--------------+----------------+----------+---------------------+
+| trigger_id | source_vm  | hostname      | category | problem_detail                | operational_data | duration     | ack_status     | severity | last_updated        |
++------------+------------+---------------+----------+-------------------------------+------------------+--------------+----------------+----------+---------------------+
+|      23875 | vmzabbix02 | Zabbix server | Cert     | SSL certificate is invalid    | No data          | 197d 14h 26m | Unacknowledged | Average  | 2026-01-29 22:07:20 |
+|      24126 | vmzabbix02 | vmoffline01   | Linux    | Zabbix agent is not available | No data          | 16d 50m      | Unacknowledged | Average  | 2026-01-29 22:07:20 |
++------------+------------+---------------+----------+-------------------------------+------------------+--------------+----------------+----------+---------------------+
+2 rows in set (0.011 sec)
 ```
 
 To insert your data into the MySQL table, you should use the ON DUPLICATE KEY UPDATE syntax. This is the most efficient method because it allows the script to update the duration or acknowledgment status of an existing alert without creating a duplicate row for the same trigger_id.
