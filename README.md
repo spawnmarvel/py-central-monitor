@@ -107,7 +107,7 @@ tokenbased:
 - Groups: Select your API_Automation_Group.
 - User role tab: Select your API_Limited_Write_Role.
 
-## run script
+## pcm-agent-collector
 
 ```bash 
 (venv python3 get_problems.py)
