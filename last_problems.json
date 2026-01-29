@@ -1,0 +1,58 @@
+{
+    "23875": {
+        "source_vm": "vmzabbix02",
+        "hostname": "Zabbix server",
+        "full_display": "vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 10h 57m; Unacknowledged",
+        "opdata": "No data",
+        "duration": "197d 10h 57m",
+        "action": "Unacknowledged"
+    },
+    "24075": {
+        "source_vm": "vmzabbix02",
+        "hostname": "dmzdocker03",
+        "full_display": "vmzabbix02; dmzdocker03; Interface eth0; Ethernet has changed to lower speed than it was before; Current reported speed: {ITEM.LASTVALUE1}; 48d 20h 31m; Unacknowledged",
+        "opdata": "Current reported speed: {ITEM.LASTVALUE1}",
+        "duration": "48d 20h 31m",
+        "action": "Unacknowledged"
+    },
+    "24126": {
+        "source_vm": "vmzabbix02",
+        "hostname": "vmoffline01",
+        "full_display": "vmzabbix02; vmoffline01; Linux; Zabbix agent is not available; No data; 15d 21h 21m; Unacknowledged",
+        "opdata": "No data",
+        "duration": "15d 21h 21m",
+        "action": "Unacknowledged"
+    },
+    "24105": {
+        "source_vm": "vmzabbix02",
+        "hostname": "docker03getmirrortest",
+        "full_display": "vmzabbix02; docker03getmirrortest; Interface eth0; Ethernet has changed to lower speed than it was before; Current reported speed: {ITEM.LASTVALUE1}; 11d 7h 1m; Unacknowledged",
+        "opdata": "Current reported speed: {ITEM.LASTVALUE1}",
+        "duration": "11d 7h 1m",
+        "action": "Unacknowledged"
+    },
+    "24039": {
+        "source_vm": "vmzabbix02",
+        "hostname": "docker03getmirrortest",
+        "full_display": "vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 9d 23h 29m; Unacknowledged",
+        "opdata": "No data",
+        "duration": "9d 23h 29m",
+        "action": "Unacknowledged"
+    },
+    "24062": {
+        "source_vm": "vmzabbix02",
+        "hostname": "dmzdocker03",
+        "full_display": "vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 9d 23h 29m; Unacknowledged",
+        "opdata": "No data",
+        "duration": "9d 23h 29m",
+        "action": "Unacknowledged"
+    },
+    "23795": {
+        "source_vm": "vmzabbix02",
+        "hostname": "Zabbix server",
+        "full_display": "vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 22h 2m; Unacknowledged",
+        "opdata": "No data",
+        "duration": "22h 2m",
+        "action": "Unacknowledged"
+    }
+}

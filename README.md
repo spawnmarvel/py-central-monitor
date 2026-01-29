@@ -59,12 +59,13 @@ example structure
 
 ```text
 py-central-monitor/
-├── .git/               # Git metadata
-├── venv/               # Virtual environment (IGNORED)
-├── .gitignore          # Should contain "venv/" and "config.json"
-├── config.json         # Your local secrets (IGNORED)
-├── config.json.example # Template for others (TRACKED)
-└── get_problems.py     # Your script (TRACKED)
+├── .git/                      # Git metadata
+├── venv/                      # Python virtual environment (IGNORED)
+├── .gitignore                 # Files to exclude from Git
+├── config.json                # Real credentials (IGNORED)
+├── config.json.example        # Template with dummy data (TRACKED)
+├── last_problems.json         # The local state "brain" (IGNORED)
+└── pcm_agent_collector.py     # Your main logic (TRACKED)
 ```
 
 ## config
@@ -74,6 +75,7 @@ user and passbased:
 ```json
 {
     "zabbix_url": "https://your-zabbix-server/zabbix",
+    "zabbix_vm_name": "monitored host name",
     "zabbix_user": "Admin",
     "zabbix_pass": "your_password"
 }
@@ -128,47 +130,59 @@ In this example the data is collect from a remote zabbix server (it could be loc
 Example result:
 
 ```text
-Connected to Zabbix API
--------------------------------------------------------
-[Zabbix server] High: Cert: SSL certificate is invalid
-  > Operational Data: No data
-  > Trigger ID: 23875
-------------------------------
-[vmoffline01] Average: Linux: Zabbix agent is not available
-  > Operational Data: No data
-  > Trigger ID: 24126
-------------------------------
-[docker03getmirrortest] Average: Linux: Zabbix agent is not available
-  > Operational Data: No data
-  > Trigger ID: 24039
-------------------------------
-[dmzdocker03] Average: Linux: Zabbix agent is not available
-  > Operational Data: No data
-  > Trigger ID: 24062
-------------------------------
-[Zabbix server] Warning: MySQL: Buffer pool utilization is too low
-  > Operational Data: No data
-  > Trigger ID: 23795
-------------------------------
-[dmzdocker03] Info: Interface eth0: Ethernet has changed to lower speed than it was before
-  > Operational Data: Current reported speed: {ITEM.LASTVALUE1}
-  > Trigger ID: 24075
-------------------------------
-[docker03getmirrortest] Info: Interface eth0: Ethernet has changed to lower speed than it was before
-  > Operational Data: Current reported speed: {ITEM.LASTVALUE1}
-  > Trigger ID: 24105
-------------------------------
+NEW PROBLEM; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 10h 48m; Unacknowledged
+NEW PROBLEM; vmzabbix02; dmzdocker03; Interface eth0; Ethernet has changed to lower speed than it was before; Current reported speed: {ITEM.LASTVALUE1}; 48d 20h 21m; Unacknowledged
+NEW PROBLEM; vmzabbix02; vmoffline01; Linux; Zabbix agent is not available; No data; 15d 21h 12m; Unacknowledged
+NEW PROBLEM; vmzabbix02; docker03getmirrortest; Interface eth0; Ethernet has changed to lower speed than it was before; Current reported speed: {ITEM.LASTVALUE1}; 11d 6h 51m; Unacknowledged
+NEW PROBLEM; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 9d 23h 19m; Unacknowledged
+NEW PROBLEM; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 9d 23h 19m; Unacknowledged
+NEW PROBLEM; vmzabbix02; Zabbix server; MySQL; Service has been restarted; No data; 21h 58m; Unacknowledged
+NEW PROBLEM; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 21h 53m; Unacknowledged
+NEW PROBLEM; vmzabbix02; Zabbix server; Linux; Zabbix server has been restarted; No data; 9m; Unacknowledged
 ```
 
-- Secured your credentials using a config.json file.
+second run
 
-- Isolated your environment using a Python venv.
+```bash
+python3 pcm_agent_collector.py 
+# No changes since last run.
+``` 
 
-- Hardened your Git workflow by untracking sensitive files.
+example last_problems.json
 
-- Mastered the Zabbix API connection while handling SSL certificate issues.
+```json
+{
+    "23875": {
+        "source_vm": "vmzabbix02",
+        "hostname": "Zabbix server",
+        "full_display": "vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 10h 57m; Unacknowledged",
+        "opdata": "No data",
+        "duration": "197d 10h 57m",
+        "action": "Unacknowledged"
+    },
+    "24075": {
+        "source_vm": "vmzabbix02",
+        "hostname": "dmzdocker03",
+        "full_display": "vmzabbix02; dmzdocker03; Interface eth0; Ethernet has changed to lower speed than it was before; Current reported speed: {ITEM.LASTVALUE1}; 48d 20h 31m; Unacknowledged",
+        "opdata": "Current reported speed: {ITEM.LASTVALUE1}",
+        "duration": "48d 20h 31m",
+        "action": "Unacknowledged"
+    }
+   
+}
+```
 
-- Extracted live problem data, including hostnames, severity levels, and operational data.
+Information:
+
+- Secured Credentials: Moved secrets to config.json with a tracked .example template.
+
+- Environment Isolation: Standardized on a Python venv for clean dependency management.
+
+- Git Hardening: Implemented .gitignore to prevent credential leaks and ignore local state files.
+
+- Stateful Intelligence: Built a "brain" via last_problems.json to track active alerts and only perform database writes when data actually changes.
+
+- Delimited Data Engine: Created a semicolon-delimited output format tailored for the central_monitor database schema.
 
 
 ## central monitor database
@@ -184,17 +198,39 @@ create the database
 
 ```sql
 
-create database central_monitor character set utf8mb4 collate utf8mb4_bin;
+CREATE DATABASE central_monitor CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
-create user pcm-agent@'%' identified by 'password';
+CREATE USER 'pcm-agent'@'%' IDENTIFIED BY 'password';
 
-grant all privileges on central_monitor.* to pcm-agent@'%';
+GRANT ALL PRIVILEGES ON central_monitor.* TO 'pcm-agent'@'%';
 
--- create table
--- agent_name,zabbx_name, monitored_host, level, message,                               , host_data                 trigger_id 
--- agent name,            dmzdocker03     Average: Linux: Zabbix agent is not available, Operational Data: No data, Trigger ID: 24062
+FLUSH PRIVILEGES;
+
+
+USE central_monitor;
+
+CREATE TABLE IF NOT EXISTS zabbix_live_problems (
+    trigger_id BIGINT PRIMARY KEY,
+    source_vm VARCHAR(50),
+    hostname VARCHAR(255),
+    category VARCHAR(100),
+    problem_detail TEXT,
+    operational_data TEXT,
+    duration VARCHAR(50),
+    ack_status VARCHAR(50),
+    severity VARCHAR(20),
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
 ```
+
+Why this structure?
+- trigger_id as PRIMARY KEY: This is the most important part. Since Zabbix gives every alert a unique ID, we use it to prevent duplicates. If the script finds a change, it will REPLACE or UPDATE the row with that ID rather than creating a new one.
+
+- utf8mb4_bin: Matches your database collation, ensuring that special characters in Zabbix item names (like Greek letters or symbols) don't break the insert.
+
+- last_updated: This helps you see exactly when the script last synced that specific alert to the central database.
+
 
 ## flask app central monitor view
 
