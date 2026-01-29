@@ -1,11 +1,16 @@
 {
     "23875": {
-        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 14h 26m; Unacknowledged",
+        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 14h 43m; Unacknowledged",
         "opdata": "No data",
         "action": "Unacknowledged"
     },
     "24126": {
-        "display": "24126; vmzabbix02; vmoffline01; Linux; Zabbix agent is not available; No data; 16d 50m; Unacknowledged",
+        "display": "24126; vmzabbix02; vmchaos09; Linux; Zabbix agent is not available; No data; 16d 1h 7m; Unacknowledged",
+        "opdata": "No data",
+        "action": "Unacknowledged"
+    },
+    "24122": {
+        "display": "24122; vmzabbix02; vmchaos09; Linux; vmchaos09 has been restarted; No data; 0m; Unacknowledged",
         "opdata": "No data",
         "action": "Unacknowledged"
     }
