@@ -4,10 +4,9 @@ python webapp for central monitoring from different sources
 
 ## env
 
-* flask
 * linux
-* api
-* 
+* zabbix api
+* cron job or az functions
 
 ```bash
 python3 --version
@@ -109,12 +108,24 @@ tokenbased:
 
 ## pcm-agent-collector
 
+The agent can be deployed to any linux server and can send data to a mysql database that acts as a central monitor for many agents
+
+Here the data is collected from a zabbix server.
+
+The data can the be:
+
+- stored local/ file / db
+- sent to remote server and stored local/ file / db / rabbitmq
+
+In this example the data is collect from a remote zabbix server (it could be localhost also, on the zabbix server) and sent to a remote mysql.
+
+
 ```bash 
-(venv python3 get_problems.py)
+(venv python3 pcm_agent_collector.py.py)
 
 ```
 
-result
+Example result:
 
 ```text
 Connected to Zabbix API
@@ -159,7 +170,33 @@ Connected to Zabbix API
 
 - Extracted live problem data, including hostnames, severity levels, and operational data.
 
-## flask app
+
+## central monitor database
+
+The agents can be deployed to any linux server and can send data to a mysql database that acts as a central monitor for many agents.
+
+The data in the database can then be shipped of or use replication on mysql , https://dev.mysql.com/doc/refman/8.4/en/replication.html
+
+Replication enables data from one MySQL database server (known as a source) to be copied to one or more MySQL database servers (known as replicas). - 
+
+Replication is asynchronous by default; replicas do not need to be connected permanently to receive updates from a source. Depending on the configuration, you can replicate all databases, selected databases, or even selected tables within a database
+create the database
+
+```sql
+
+create database central_monitor character set utf8mb4 collate utf8mb4_bin;
+
+create user pcm-agent@'%' identified by 'password';
+
+grant all privileges on central_monitor.* to pcm-agent@'%';
+
+-- create table
+-- agent_name,zabbx_name, monitored_host, level, message,                               , host_data                 trigger_id 
+-- agent name,            dmzdocker03     Average: Linux: Zabbix agent is not available, Operational Data: No data, Trigger ID: 24062
+
+```
+
+## flask app central monitor view
 
 
 
