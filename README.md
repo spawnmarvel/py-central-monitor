@@ -106,7 +106,7 @@ tokenbased:
 - Groups: Select your API_Automation_Group.
 - User role tab: Select your API_Limited_Write_Role.
 
-## pcm-agent-collector
+## pcm-agent-collector (telegraf??)
 
 The agent can be deployed to any linux server and can send data to a mysql database that acts as a central monitor for many agents
 
