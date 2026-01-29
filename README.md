@@ -246,6 +246,12 @@ ON DUPLICATE KEY UPDATE
 
 result on select
 
+```sql
+select * from zabbix_live_problems;
+```
+
+row
+
 ```text
 +------------+------------+---------------+----------+-------------------------------+------------------+--------------+----------------+----------+---------------------+
 | trigger_id | source_vm  | hostname      | category | problem_detail                | operational_data | duration     | ack_status     | severity | last_updated        |
