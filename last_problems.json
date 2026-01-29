@@ -1,26 +1,16 @@
 {
     "23875": {
-        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 11h 7m; Unacknowledged",
+        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 14h 14m; Unacknowledged",
         "opdata": "No data",
         "action": "Unacknowledged"
     },
     "24126": {
-        "display": "24126; vmzabbix02; vmoffline01; Linux; Zabbix agent is not available; No data; 15d 21h 31m; Unacknowledged",
-        "opdata": "No data",
-        "action": "Unacknowledged"
-    },
-    "24039": {
-        "display": "24039; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 9d 23h 39m; Unacknowledged",
-        "opdata": "No data",
-        "action": "Unacknowledged"
-    },
-    "24062": {
-        "display": "24062; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 9d 23h 39m; Unacknowledged",
+        "display": "24126; vmzabbix02; vmoffline01; Linux; Zabbix agent is not available; No data; 16d 38m; Unacknowledged",
         "opdata": "No data",
         "action": "Unacknowledged"
     },
     "23795": {
-        "display": "23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 22h 13m; Unacknowledged",
+        "display": "23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 1d 1h 19m; Unacknowledged",
         "opdata": "No data",
         "action": "Unacknowledged"
     }
