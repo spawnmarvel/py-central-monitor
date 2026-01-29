@@ -130,15 +130,13 @@ In this example the data is collect from a remote zabbix server (it could be loc
 Example result:
 
 ```text
-NEW PROBLEM; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 10h 48m; Unacknowledged
-NEW PROBLEM; vmzabbix02; dmzdocker03; Interface eth0; Ethernet has changed to lower speed than it was before; Current reported speed: {ITEM.LASTVALUE1}; 48d 20h 21m; Unacknowledged
-NEW PROBLEM; vmzabbix02; vmoffline01; Linux; Zabbix agent is not available; No data; 15d 21h 12m; Unacknowledged
-NEW PROBLEM; vmzabbix02; docker03getmirrortest; Interface eth0; Ethernet has changed to lower speed than it was before; Current reported speed: {ITEM.LASTVALUE1}; 11d 6h 51m; Unacknowledged
-NEW PROBLEM; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 9d 23h 19m; Unacknowledged
-NEW PROBLEM; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 9d 23h 19m; Unacknowledged
-NEW PROBLEM; vmzabbix02; Zabbix server; MySQL; Service has been restarted; No data; 21h 58m; Unacknowledged
-NEW PROBLEM; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 21h 53m; Unacknowledged
-NEW PROBLEM; vmzabbix02; Zabbix server; Linux; Zabbix server has been restarted; No data; 9m; Unacknowledged
+NEW PROBLEM; 24075; vmzabbix02; dmzdocker03; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 4m; Unacknowledged
+NEW PROBLEM; 24105; vmzabbix02; docker03getmirrortest; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 4m; Unacknowledged
+NEW PROBLEM; 23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 11h 7m; Unacknowledged
+NEW PROBLEM; 24126; vmzabbix02; vmoffline01; Linux; Zabbix agent is not available; No data; 15d 21h 31m; Unacknowledged
+NEW PROBLEM; 24039; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 9d 23h 39m; Unacknowledged
+NEW PROBLEM; 24062; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 9d 23h 38m; Unacknowledged
+NEW PROBLEM; 23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 22h 12m; Unacknowledged
 ```
 
 second run
