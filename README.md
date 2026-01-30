@@ -264,6 +264,10 @@ row
 
 ![sql bench](https://github.com/spawnmarvel/py-central-monitor/blob/main/images/sql_bench.png)
 
+zabbix
+
+![zabbix row](https://github.com/spawnmarvel/py-central-monitor/blob/main/images/zabbix_1.png)
+
 
 ## flask app central monitor view
 
