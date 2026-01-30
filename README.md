@@ -211,30 +211,41 @@ CREATE TABLE IF NOT EXISTS zabbix_live_problems (
     duration VARCHAR(50),
     ack_status VARCHAR(50),
     severity VARCHAR(20),
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    severity_level INT, -- New: Allows sorting (0=Info, 5=Disaster)
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX (hostname),   -- Optimization: Faster searching by host
+    INDEX (category)    -- Optimization: Faster filtering by category
 );
+
 
 ```
 
 Why this structure?
-- trigger_id as PRIMARY KEY: This is the most important part. Since Zabbix gives every alert a unique ID, we use it to prevent duplicates. If the script finds a change, it will REPLACE or UPDATE the row with that ID rather than creating a new one.
 
+- trigger_id as BIGINT: Correct. Zabbix 7.0 IDs are large.
+- operational_data as TEXT: Correct. Sometimes Zabbix 7.0 packs extra metadata into this field.
 - utf8mb4_bin: Matches your database collation, ensuring that special characters in Zabbix item names (like Greek letters or symbols) don't break the insert.
-
 - last_updated: This helps you see exactly when the script last synced that specific alert to the central database.
 
 ## example insert into
 
 ```sql
+USE central_monitor;
+
 INSERT INTO zabbix_live_problems 
-    (trigger_id, source_vm, hostname, category, problem_detail, operational_data, duration, ack_status, severity) 
+    (trigger_id, source_vm, hostname, category, problem_detail, operational_data, duration, ack_status, severity, severity_level) 
 VALUES 
-    (23875, 'vmzabbix02', 'Zabbix server', 'Cert', 'SSL certificate is invalid', 'No data', '197d 14h 26m', 'Unacknowledged', 'Warning'),
-    (24126, 'vmzabbix02', 'vmoffline01', 'Linux', 'Zabbix agent is not available', 'No data', '16d 50m', 'Unacknowledged', 'Average')
+    (23875, 'vmzabbix02', 'Zabbix server', 'Cert', 'SSL certificate is invalid', 'No data', '198d 7h 13m', 'Unacknowledged', 'High', 4),
+    (24126, 'vmzabbix02', 'vmchaos09', 'Linux', 'Zabbix agent is not available', 'No data', '27m', 'Unacknowledged', 'Average', 3),
+    (24039, 'vmzabbix02', 'docker03getmirrortest', 'Linux', 'Zabbix agent is not available', 'No data', '27m', 'Unacknowledged', 'Average', 3),
+    (24062, 'vmzabbix02', 'dmzdocker03', 'Linux', 'Zabbix agent is not available', 'No data', '27m', 'Unacknowledged', 'Average', 3),
+    (23795, 'vmzabbix02', 'Zabbix server', 'MySQL', 'Buffer pool utilization is too low', 'No data', '24m', 'Unacknowledged', 'Warning', 2),
+    (23435, 'vmzabbix02', 'Zabbix server', 'Interface eth0', 'Ethernet has changed to lower speed than it was before', 'No data', '18m', 'Unacknowledged', 'Info', 1)
+AS new_data -- This creates an alias for the incoming data
 ON DUPLICATE KEY UPDATE 
-    operational_data = VALUES(operational_data),
-    duration = VALUES(duration),
-    ack_status = VALUES(ack_status),
+    duration = new_data.duration,
+    operational_data = new_data.operational_data,
+    ack_status = new_data.ack_status,
     last_updated = CURRENT_TIMESTAMP;
 ```
 
@@ -242,21 +253,15 @@ result on select
 
 ```sql
 select * from zabbix_live_problems;
+
+-- or
+SELECT trigger_id, hostname, severity, duration, operational_data 
+FROM zabbix_live_problems 
+ORDER BY severity_level DESC;
 ```
 
 row
 
-```text
-+------------+------------+---------------+----------+-------------------------------+------------------+--------------+----------------+----------+---------------------+
-| trigger_id | source_vm  | hostname      | category | problem_detail                | operational_data | duration     | ack_status     | severity | last_updated        |
-+------------+------------+---------------+----------+-------------------------------+------------------+--------------+----------------+----------+---------------------+
-|      23875 | vmzabbix02 | Zabbix server | Cert     | SSL certificate is invalid    | No data          | 197d 14h 26m | Unacknowledged | Average  | 2026-01-29 22:07:20 |
-|      24126 | vmzabbix02 | vmoffline01   | Linux    | Zabbix agent is not available | No data          | 16d 50m      | Unacknowledged | Average  | 2026-01-29 22:07:20 |
-+------------+------------+---------------+----------+-------------------------------+------------------+--------------+----------------+----------+---------------------+
-2 rows in set (0.011 sec)
-```
-
-To insert your data into the MySQL table, you should use the ON DUPLICATE KEY UPDATE syntax. This is the most efficient method because it allows the script to update the duration or acknowledgment status of an existing alert without creating a duplicate row for the same trigger_id.
 
 ## flask app central monitor view
 

@@ -1,20 +1,20 @@
 {
     "23875": {
-        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 198d 7h 9m; Unacknowledged; High"
+        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 198d 7h 13m; Unacknowledged; High"
     },
     "24126": {
-        "display": "24126; vmzabbix02; vmchaos09; Linux; Zabbix agent is not available; No data; 23m; Unacknowledged; Average"
+        "display": "24126; vmzabbix02; vmchaos09; Linux; Zabbix agent is not available; No data; 27m; Unacknowledged; Average"
     },
     "24039": {
-        "display": "24039; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 23m; Unacknowledged; Average"
+        "display": "24039; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 27m; Unacknowledged; Average"
     },
     "24062": {
-        "display": "24062; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 23m; Unacknowledged; Average"
+        "display": "24062; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 27m; Unacknowledged; Average"
     },
     "23795": {
-        "display": "23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 21m; Unacknowledged; Warning"
+        "display": "23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 24m; Unacknowledged; Warning"
     },
     "23435": {
-        "display": "23435; vmzabbix02; Zabbix server; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 15m; Unacknowledged; Info"
+        "display": "23435; vmzabbix02; Zabbix server; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 18m; Unacknowledged; Info"
     }
 }
