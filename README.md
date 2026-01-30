@@ -5,6 +5,7 @@ python webapp for central monitoring from different sources
 ## env
 
 * linux
+* zabbix 7.0.22 / 7 LTS
 * zabbix api
 * cron job or az functions
 
@@ -130,13 +131,12 @@ In this example the data is collect from a remote zabbix server (it could be loc
 Example result:
 
 ```text
-NEW PROBLEM; 24075; vmzabbix02; dmzdocker03; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 4m; Unacknowledged
-NEW PROBLEM; 24105; vmzabbix02; docker03getmirrortest; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 4m; Unacknowledged
-NEW PROBLEM; 23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 11h 7m; Unacknowledged
-NEW PROBLEM; 24126; vmzabbix02; vmoffline01; Linux; Zabbix agent is not available; No data; 15d 21h 31m; Unacknowledged
-NEW PROBLEM; 24039; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 9d 23h 39m; Unacknowledged
-NEW PROBLEM; 24062; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 9d 23h 38m; Unacknowledged
-NEW PROBLEM; 23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 22h 12m; Unacknowledged
+PROBLEM; 23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 198d 7h 1m; Unacknowledged; High
+PROBLEM; 24126; vmzabbix02; vmchaos09; Linux; Zabbix agent is not available; No data; 15m; Unacknowledged; Average
+PROBLEM; 24039; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 14m; Unacknowledged; Average
+PROBLEM; 24062; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 14m; Unacknowledged; Average
+PROBLEM; 23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 12m; Unacknowledged; Warning
+PROBLEM; 23435; vmzabbix02; Zabbix server; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 6m; Unacknowledged; Info
 ```
 
 second run
@@ -151,19 +151,13 @@ example last_problems.json
 ```json
 {
     "23875": {
-        "source_vm": "vmzabbix02",
-        "hostname": "Zabbix server",
-        "full_display": "vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 197d 10h 57m; Unacknowledged",
+        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 198d 7h 1m; Unacknowledged; High",
         "opdata": "No data",
-        "duration": "197d 10h 57m",
         "action": "Unacknowledged"
     },
-    "24075": {
-        "source_vm": "vmzabbix02",
-        "hostname": "dmzdocker03",
-        "full_display": "vmzabbix02; dmzdocker03; Interface eth0; Ethernet has changed to lower speed than it was before; Current reported speed: {ITEM.LASTVALUE1}; 48d 20h 31m; Unacknowledged",
-        "opdata": "Current reported speed: {ITEM.LASTVALUE1}",
-        "duration": "48d 20h 31m",
+    "24126": {
+        "display": "24126; vmzabbix02; vmchaos09; Linux; Zabbix agent is not available; No data; 15m; Unacknowledged; Average",
+        "opdata": "No data",
         "action": "Unacknowledged"
     }
    
@@ -178,7 +172,7 @@ Information:
 
 - Git Hardening: Implemented .gitignore to prevent credential leaks and ignore local state files.
 
-- Stateful Intelligence: Built a "brain" via last_problems.json to track active alerts and only perform database writes when data actually changes.
+- Stateful Intelligence: Built a "brain" via last_problems.json to track active alerts.
 
 - Delimited Data Engine: Created a semicolon-delimited output format tailored for the central_monitor database schema.
 

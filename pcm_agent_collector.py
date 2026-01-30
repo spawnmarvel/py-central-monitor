@@ -5,6 +5,7 @@ import urllib.request
 import time
 
 def zabbix_rpc(url, method, params, auth_token=None):
+    """Standard Zabbix API Request Handler"""
     if not url.endswith('/api_jsonrpc.php'):
         url = url.rstrip('/') + '/api_jsonrpc.php'
 
@@ -24,6 +25,7 @@ def zabbix_rpc(url, method, params, auth_token=None):
         return {"error": str(e)}
 
 def format_duration(seconds):
+    """Converts unix timestamp difference into readable d/h/m format"""
     m, s = divmod(int(seconds), 60)
     h, m = divmod(m, 60)
     d, h = divmod(h, 24)
@@ -31,139 +33,115 @@ def format_duration(seconds):
     if d > 0: parts.append(str(d) + "d")
     if h > 0: parts.append(str(h) + "h")
     if m > 0: parts.append(str(m) + "m")
-    
-    if parts:
-        return " ".join(parts)
-    else:
-        return "0m"
+    return " ".join(parts) if parts else "0m"
 
 def get_zabbix_data():
+    # 1. Setup paths and load local configuration
     base_dir = os.path.dirname(os.path.abspath(__file__))
     config_file = os.path.join(base_dir, 'config.json')
     history_file = os.path.join(base_dir, 'last_problems.json')
     
     if not os.path.exists(config_file):
-        error_output = "Error: " + config_file + " not found."
-        print(error_output)
+        print("Error: " + config_file + " not found.")
         return
 
     with open(config_file, 'r') as f:
         config = json.load(f)
 
     z_vm_name = config.get("zabbix_vm_name", "Unknown-VM")
-    history = {}
     
+    # 2. Load the previous snapshot to detect resolved problems
+    history = {}
     if os.path.exists(history_file):
         with open(history_file, 'r') as f:
-            file_content = f.read()
-            if file_content:
-                history = json.loads(file_content)
+            try: history = json.load(f)
+            except: history = {}
 
-    # 1. Login
+    # 3. Authenticate with Zabbix API
     login = zabbix_rpc(config['zabbix_url'], "user.login", 
                        {"username": config['zabbix_user'], "password": config['zabbix_pass']})
     
     if "result" not in login:
-        error_msg = str(login.get("error", "Unknown Error"))
-        login_error = "Login failed: " + error_msg
-        print(login_error)
+        print("Login failed: " + str(login.get("error", "Unknown Error")))
         return
-
     auth_token = login["result"]
 
-    # 2. Fetch Data
+    # 4. Request Active Problems
+    # In Zabbix 7.0, we select 'lastEvent' to try and get expanded opdata macros
     params = {
         "output": ["triggerid", "description", "priority", "opdata", "lastchange"],
         "selectHosts": ["name"],
-        "selectLastEvent": ["acknowledged", "opdata"], 
+        "selectLastEvent": "extend", 
         "expandDescription": True,
         "only_true": True,
         "monitored": True
     }
     
     rpc_response = zabbix_rpc(config['zabbix_url'], "trigger.get", params, auth_token)
+    triggers = rpc_response.get("result", [])
     
-    if "result" not in rpc_response:
-        fetch_error = "Failed to fetch triggers."
-        print(fetch_error)
-        return
-
-    triggers = rpc_response["result"]
     current_time = time.time()
     current_state = {}
-    changes_detected = False
+    severity_labels = ["Not classified", "Info", "Warning", "Average", "High", "Disaster"]
 
-    # 3. Process Triggers
+    # 5. Process currently active triggers
     for t in triggers:
         tid = str(t['triggerid'])
+        hostname = t["hosts"][0]["name"] if t.get("hosts") else "Unknown"
         
-        if t.get("hosts"):
-            hostname = t["hosts"][0]["name"]
-        else:
-            hostname = "Unknown"
-        
+        # Split Category (e.g., 'Cert') from Problem Detail
         raw_desc = t['description']
         if ":" in raw_desc:
             parts = raw_desc.split(":", 1)
             category = parts[0].strip()
-            problem_detail = parts[1].strip()
+            detail = parts[1].strip()
         else:
             category = "General"
-            problem_detail = raw_desc.strip()
+            detail = raw_desc.strip()
         
+        # Operational Data Search (Macro Expansion)
         op_data = "No data"
-        event_data = t.get("lastEvent", {})
-        event_opdata = event_data.get("opdata")
-        trigger_opdata = t.get("opdata")
-
-        if event_opdata and "{ITEM.LASTVALUE" not in event_opdata:
-            op_data = event_opdata
-        elif trigger_opdata and "{ITEM.LASTVALUE" not in trigger_opdata:
-            op_data = trigger_opdata
+        last_event = t.get("lastEvent")
+        
+        # Look in the Event metadata first (Zabbix 7.0 default)
+        if isinstance(last_event, dict) and last_event.get("opdata"):
+            val = str(last_event["opdata"]).strip()
+            if val and "{ITEM.LASTVALUE" not in val:
+                op_data = val
+        
+        # Fallback to Trigger opdata field
+        if op_data == "No data" and t.get("opdata"):
+            val = str(t["opdata"]).strip()
+            if val and "{ITEM.LASTVALUE" not in val:
+                op_data = val
         
         duration_str = format_duration(current_time - int(t['lastchange']))
         
-        if event_data.get("acknowledged") == "1":
+        # Determine if the alert has been acknowledged in the UI
+        ack_status = "Unacknowledged"
+        if isinstance(last_event, dict) and last_event.get("acknowledged") == "1":
             ack_status = "Acknowledged"
-        else:
-            ack_status = "Unacknowledged"
 
-        # Construct the core semicolon string using concatenation
-        formatted_string = tid + "; " + z_vm_name + "; " + hostname + "; " + category + "; " + problem_detail + "; " + op_data + "; " + duration_str + "; " + ack_status
+        severity = severity_labels[int(t['priority'])]
+
+        # Construct semicolon string for console output
+        formatted_string = tid + "; " + z_vm_name + "; " + hostname + "; " + category + "; " + detail + "; " + op_data + "; " + duration_str + "; " + ack_status + "; " + severity
         
-        current_state[tid] = {
-            "display": formatted_string,
-            "opdata": op_data,
-            "action": ack_status
-        }
+        current_state[tid] = {"display": formatted_string}
 
-        # Compare with history
-        if tid not in history:
-            output_msg = "NEW PROBLEM; " + formatted_string
-            print(output_msg)
-            changes_detected = True
-        elif history[tid]['opdata'] != op_data or history[tid]['action'] != ack_status:
-            output_msg = "DATA UPDATE; " + formatted_string
-            print(output_msg)
-            changes_detected = True
+        print("PROBLEM; " + formatted_string)
 
-    # 4. Handle Resolutions
-    resolved_ids = set(history.keys()) - set(current_state.keys())
-    for rid in resolved_ids:
-        # String concatenation for resolved messages
-        resolved_msg = "RESOLVED; " + str(history[rid]['display'])
-        print(resolved_msg)
-        changes_detected = True
+    # 6. Compare new data with history to find resolved alerts
+    for old_tid in history:
+        if old_tid not in current_state:
+            # If it was in our JSON but is no longer in Zabbix, it is RESOLVED
+            print("RESOLVED; " + str(history[old_tid]['display']))
 
-    # 5. Save state
-    if changes_detected:
-        with open(history_file, 'w') as f:
-            json.dump(current_state, f, indent=4)
-    else:
-        no_change_msg = "No changes since last run."
-        print(no_change_msg)
+    # 7. Save the current snapshot back to JSON for the next run
+    with open(history_file, 'w') as f:
+        json.dump(current_state, f, indent=4)
 
-    # 6. Logout
+    # 8. Close the API session
     zabbix_rpc(config['zabbix_url'], "user.logout", [], auth_token)
 
 if __name__ == "__main__":
