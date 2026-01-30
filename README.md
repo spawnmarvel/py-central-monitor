@@ -262,6 +262,8 @@ ORDER BY severity_level DESC;
 
 row
 
+![sql bench](https://github.com/spawnmarvel/py-central-monitor/blob/main/images/sql_bench.png)
+
 
 ## flask app central monitor view
 
