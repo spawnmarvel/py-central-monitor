@@ -271,6 +271,12 @@ zabbix
 
 ## flask app central monitor view
 
+```cmd
+pip install flask
+```
+
+![app](https://github.com/spawnmarvel/py-central-monitor/blob/main/images/app.png)
+
 
 
 

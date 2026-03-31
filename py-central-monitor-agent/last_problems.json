@@ -1,20 +1,38 @@
 {
-    "23875": {
-        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 198d 7h 13m; Unacknowledged; High"
-    },
-    "24126": {
-        "display": "24126; vmzabbix02; vmchaos09; Linux; Zabbix agent is not available; No data; 27m; Unacknowledged; Average"
+    "24372": {
+        "display": "24372; vmzabbix02; Zabbix server; General; Test Disaster; 4.748603000000003 %; 0m; Unacknowledged; Disaster"
     },
     "24039": {
-        "display": "24039; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; No data; 27m; Unacknowledged; Average"
+        "display": "24039; vmzabbix02; docker03getmirrortest; Linux; Zabbix agent is not available; 0; 56m; Unacknowledged; Average"
+    },
+    "24278": {
+        "display": "24278; vmzabbix02; vmhybrid01; Windows; Zabbix agent is not available; 0; 56m; Unacknowledged; Average"
+    },
+    "24225": {
+        "display": "24225; vmzabbix02; vmsnmpsim01; Linux; Unavailable by ICMP ping; 0; 57m; Unacknowledged; High"
     },
     "24062": {
-        "display": "24062; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; No data; 27m; Unacknowledged; Average"
+        "display": "24062; vmzabbix02; dmzdocker03; Linux; Zabbix agent is not available; 0; 59m; Unacknowledged; Average"
     },
-    "23795": {
-        "display": "23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too low; No data; 24m; Unacknowledged; Warning"
+    "24301": {
+        "display": "24301; vmzabbix02; vmhybrid01; General; \"AppXSvc\" (AppX Deployment Service (AppXSVC)) is not running; 6; 16h 52m; Unacknowledged; Average"
     },
-    "23435": {
-        "display": "23435; vmzabbix02; Zabbix server; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 18m; Unacknowledged; Info"
+    "24322": {
+        "display": "24322; vmzabbix02; vmhybrid01; General; \"InventorySvc\" (Inventory and Compatibility Appraisal service) is not running; 6; 17h 50m; Unacknowledged; Average"
+    },
+    "24371": {
+        "display": "24371; vmzabbix02; vmhybrid01; General; WorkingSetMBTrapper5Min; 47.25 mb; 17h 57m; Unacknowledged; Info"
+    },
+    "23875": {
+        "display": "23875; vmzabbix02; Zabbix server; Cert; SSL certificate is invalid; No data; 258d 5h 28m; Unacknowledged; High"
+    },
+    "23630": {
+        "display": "23630; vmzabbix02; simhost01; General; CheckLastTag3AVG; 0; 288d 23h 15m; Unacknowledged; Not classified"
+    },
+    "23624": {
+        "display": "23624; vmzabbix02; simhost01; General; CheckLastTag2AVG; 0; 288d 23h 15m; Unacknowledged; Not classified"
+    },
+    "23618": {
+        "display": "23618; vmzabbix02; simhost01; General; CheckLastTag1AVG; 0; 288d 23h 16m; Unacknowledged; Not classified"
     }
 }

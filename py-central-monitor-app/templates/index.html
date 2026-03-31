@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="20">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zabbix Monitor | Live</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="title-group">
+                <h1>System Problems Dashboard</h1>
+                <span class="badge">Live Refresh: 20s</span>
+                <span class="timestamp">Last Updated: {{ update_time }}</span>
+            </div>
+            {% if not error %}
+                <div class="stats">
+                    Active Alerts: <strong>{{ alerts|length }}</strong>
+                </div>
+            {% endif %}
+        </header>
+
+        {% if error %}
+            <div class="error-banner">
+                <div class="error-icon">⚠️</div>
+                <div class="error-text">
+                    <strong>Status Error</strong><br>
+                    {{ error }}
+                </div>
+            </div>
+        {% else %}
+            <table class="monitor-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Server</th>
+                        <th>Host</th>
+                        <th>Category</th>
+                        <th>Issue</th>
+                        <th>Value</th>
+                        <th>Duration</th>
+                        <th>Ack</th>
+                        <th>Severity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cols in alerts %}
+                        {# The 9th column (index 8) contains the severity string #}
+                        {% set sev = cols[8]|lower %}
+                        
+                        <tr class="row-item 
+                            {% if 'disaster' in sev %}sev-disaster
+                            {% elif 'high' in sev %}sev-high
+                            {% elif 'average' in sev %}sev-average
+                            {% elif 'warning' in sev %}sev-warning
+                            {% elif 'info' in sev %}sev-info
+                            {% endif %}">
+                            
+                            {% for col in cols %}
+                                <td>{{ col }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% if alerts|length == 0 %}
+                <div class="empty-state">
+                    No active problems found. System healthy.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+</body>
+</html>
