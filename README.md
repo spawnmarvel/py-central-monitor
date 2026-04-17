@@ -1,13 +1,13 @@
 # py-central-monitor
 
-python webapp for central monitoring from different sources
+Python webapp for central monitoring from different sources.
 
 ## env
 
-* linux
-* zabbix 7.0.22 / 7 LTS
-* zabbix api
-* cron job or az functions
+* Linux
+* Zabbix 7.0.22 / 7 LTS
+* Zabbix API
+* cron job or Azure Functions
 
 ```bash
 python3 --version
@@ -22,7 +22,7 @@ However, since you are inside a Git repo, you must make sure the venv folder is 
 ```bash
 mkdir py-central-monitor
 # or
-git clone # the repos url
+git clone # the repository's URL
 
 cd py-central-monitor
 
@@ -71,7 +71,7 @@ py-central-monitor/
 
 ## config
 
-user and passbased:
+username and password-based:
 
 ```json
 {
@@ -81,7 +81,7 @@ user and passbased:
     "zabbix_pass": "your_password"
 }
 ```
-tokenbased:
+token-based:
 
 ## zabbix integration
 
@@ -100,7 +100,7 @@ tokenbased:
 - Name: API_Limited_Write_Role.
 - User type: Admin (required if you are updating host/item configurations).
 - API access: Checked.
-- API methods: (kept default )Specify problem.*, event.*, and host.* (or just the ones you specifically need).
+- API methods: (kept default) Specify problem.*, event.*, and host.* (or just the ones you specifically need).
 
 3. Create the User
 
@@ -109,22 +109,22 @@ tokenbased:
 - Groups: Select your API_Automation_Group.
 - User role tab: Select your API_Limited_Write_Role.
 
-## pcm-agent-collector (telegraf??)
+## pcm-agent-collector (Telegraf??)
 
-The agent can be deployed to any linux server and can send data to a mysql database that acts as a central monitor for many agents
+The agent can be deployed to any Linux server and can send data to a MySQL database that acts as a central monitor for many agents.
 
-Here the data is collected from a zabbix server.
+Here the data is collected from a Zabbix server.
 
-The data can the be:
+The data can then be:
 
-- stored local/ file / db
-- sent to remote server and stored local/ file / db / rabbitmq
+- stored locally in file/db
+- sent to remote server and stored locally in file/db/RabbitMQ
 
-In this example the data is collect from a remote zabbix server (it could be localhost also, on the zabbix server) and sent to a remote mysql.
+In this example the data is collected from a remote Zabbix server (it could be localhost also, on the Zabbix server) and sent to a remote MySQL.
 
 
 ```bash 
-(venv python3 pcm_agent_collector.py.py)
+(venv) python3 pcm_agent_collector.py
 
 ```
 
@@ -139,7 +139,7 @@ PROBLEM; 23795; vmzabbix02; Zabbix server; MySQL; Buffer pool utilization is too
 PROBLEM; 23435; vmzabbix02; Zabbix server; Interface eth0; Ethernet has changed to lower speed than it was before; No data; 6m; Unacknowledged; Info
 ```
 
-second run
+Second run
 
 ```bash
 python3 pcm_agent_collector.py 
@@ -179,14 +179,15 @@ Information:
 
 ## central monitor database
 
-The agents can be deployed to any linux server and can send data to a mysql database that acts as a central monitor for many agents.
+The agents can be deployed to any Linux server and can send data to a MySQL database that acts as a central monitor for many agents.
 
-The data in the database can then be shipped of or use replication on mysql , https://dev.mysql.com/doc/refman/8.4/en/replication.html
+The data in the database can then be shipped off or use replication on MySQL, https://dev.mysql.com/doc/refman/8.4/en/replication.html
 
-Replication enables data from one MySQL database server (known as a source) to be copied to one or more MySQL database servers (known as replicas). - 
+Replication enables data from one MySQL database server (known as a source) to be copied to one or more MySQL database servers (known as replicas).
 
-Replication is asynchronous by default; replicas do not need to be connected permanently to receive updates from a source. Depending on the configuration, you can replicate all databases, selected databases, or even selected tables within a database
-create the database
+Replication is asynchronous by default; replicas do not need to be connected permanently to receive updates from a source. Depending on the configuration, you can replicate all databases, selected databases, or even selected tables within a database.
+
+Create the database
 
 ```sql
 
@@ -227,7 +228,7 @@ Why this structure?
 - utf8mb4_bin: Matches your database collation, ensuring that special characters in Zabbix item names (like Greek letters or symbols) don't break the insert.
 - last_updated: This helps you see exactly when the script last synced that specific alert to the central database.
 
-## example insert into
+## Example INSERT INTO
 
 ```sql
 USE central_monitor;
@@ -249,7 +250,7 @@ ON DUPLICATE KEY UPDATE
     last_updated = CURRENT_TIMESTAMP;
 ```
 
-result on select
+Result on SELECT
 
 ```sql
 select * from zabbix_live_problems;
@@ -260,7 +261,7 @@ FROM zabbix_live_problems
 ORDER BY severity_level DESC;
 ```
 
-row
+Row
 
 ![sql bench](https://github.com/spawnmarvel/py-central-monitor/blob/main/images/sql_bench.png)
 
@@ -269,7 +270,7 @@ zabbix
 ![zabbix row](https://github.com/spawnmarvel/py-central-monitor/blob/main/images/zabbix_1.png)
 
 
-## flask app central monitor view
+## Flask App Central Monitor View
 
 ```cmd
 pip install flask
