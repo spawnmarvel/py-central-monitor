@@ -109,7 +109,9 @@ token-based:
 - Groups: Select your API_Automation_Group.
 - User role tab: Select your API_Limited_Write_Role.
 
-## pcm-agent-collector (Telegraf??)
+## pcm-agent-collector (Telegraf)
+
+There is a possibility to use Telegraf fro this also, but for this project we use Python.
 
 The agent can be deployed to any Linux server and can send data to a MySQL database that acts as a central monitor for many agents.
 
