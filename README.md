@@ -36,8 +36,8 @@ venv\Scripts\activate
 # On Mac/Linux:
 source venv/bin/activate
 
-# dependencies
-pip install zabbix-utils
+# dependencies for the agent is none.
+
 
 # libs
 pip freeze > requirements.txt
